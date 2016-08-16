@@ -1,4 +1,25 @@
 ####### ---- Scrape-Goats ---- ######
 ###### - Social Data Science - ######
 
-New stuff
+library("readr")
+library("purrr")
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("rvest")
+library("glmnet")
+library("jsonlite")
+library("tm")
+library("rpart")
+library("lubridate")
+library("stargazer")
+library("broom")
+library("modelr")
+library("stringr")
+library("httr")
+library("ggrepel")
+library("devtools")
+library("rio")
+
+
+
