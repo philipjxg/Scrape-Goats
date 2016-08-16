@@ -20,6 +20,7 @@ library("httr")
 library("ggrepel")
 library("devtools")
 library("rio")
+library("RSelenium")
 
 
 
