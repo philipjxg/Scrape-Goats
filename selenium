@@ -1,0 +1,49 @@
+###############################################
+#                 Exam project                #
+###############################################
+
+# install.packages("RSelenium")
+# install.packages("dplyr")
+# install.packages("rvest")
+# install.packages("stringr")
+
+library(RSelenium)
+library(dplyr)
+library(rvest)
+library(stringr)
+
+
+# Nessesary when running the code for the first time:
+
+# checkForServer()
+
+# If error check whether java is properly installed, if it is the version will be listed in the console:
+
+# system("java -version")
+
+# Booting up selenium
+
+startServer()
+
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4444, 
+                      browserName = "chrome")
+
+remDr$open(silent = TRUE)
+remDr$navigate("http://karakterstatistik.stads.ku.dk/")
+Sys.sleep(2)
+
+webElem <- remDr$findElement("name", "submit")
+webElem$clickElement()
+Sys.sleep(5)
+
+html_source <- vector("list", 100)
+i <- 1
+while (i <= 100) {
+  html_source[[i]] <- remDr$getPageSource()
+  webElem <- remDr$findElement("id", "next")
+  webElem$clickElement()
+  Sys.sleep(2)
+  i <- i + 1
+}
+Sys.sleep(3)
+remDr$close()
