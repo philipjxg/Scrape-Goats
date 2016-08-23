@@ -22,7 +22,7 @@ data.PS = raw.data.PS %>%
   select(-X, -id, -o_gns, -r_gns, -hyperlink)
 
 #########################################################
-### clean Ej mødt, Ikke bestået, Syg
+### clean Ej mÃ¸dt, Ikke bestÃ¥et, Syg
 ### create aggregated grade variable
 
 
@@ -113,7 +113,7 @@ data.EC = raw.data.EC %>%
   select(-X, -id, -o_gns, -r_gns, -hyperlink)
 
 #########################################################
-### clean Ej mødt, Ikke bestået, Syg
+### clean Ej mÃ¸dt, Ikke bestÃ¥et, Syg
 ### create aggregated grade variable
 
 data.EC$s_kar = ifelse(is.na(data.EC$r_kar)==TRUE,data.EC$o_kar, data.EC$o_kar + data.EC$r_kar )
@@ -179,7 +179,34 @@ data.EC.graf.plot$average = data.EC.graf.plot$sum.product / data.EC.graf.plot$co
 # data.EC.graf.plot1 = data.EC.graf.plot[!(data.EC.graf.plot$year=="2011" & data.EC.graf.plot$semester=="Spring"),]
 # data.EC.graf.plot1 = data.EC.graf.plot1[!(data.EC.graf.plot1$year=="2016" & data.EC.graf.plot1$semester=="Summer"),] 
 
-#########################################################
-#########################################################
-### create graph
+##### Economics SLUT #####################################################################
+
+
+
+
+
+
+
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
+
+### Combining the EC and PS data frames
+data.EC$study = "Economics"
+data.PS$study = "Political Science"
+
+data.Comb = rbind(data.EC, data.PS)
+
+
+
+
+# data.EC.graf.plot$study = "Economics"
+# data.PS.graf.plot$study = "Political Science"
+# 
+# data.Comb.graf.plot = rbind(data.EC.graf.plot, data.PS.graf.plot)
+
+
+
+###
 
