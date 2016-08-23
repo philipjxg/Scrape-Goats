@@ -7,17 +7,17 @@ library("stringr")
 
 
 raw.data=read.csv("C:\\Users\\PhilipJunXian\\OneDrive\\Polit\\Master\\Social Data Science\\Opgave\\polit.csv")
-###########################################
+#########################################################
 ### Clean the data for NA og hyperlink
-
-
 
 data = raw.data %>% 
   filter( !is.na(o_kar)==TRUE)  %>% 
   filter( !o_gns=="Intet eksamensgennemsnit")  
 data$hyperlink = NULL
 
+#########################################################
 ### clean Ej mødt, Ikke bestået, Syg
+### create aggregated grade variable
 
 data1 = data
 
@@ -28,7 +28,8 @@ data1=data1 %>%
   filter(!is.na(kar.m)==TRUE)
 data1$kar.m = NULL
 
-### correct semester
+#########################################################
+### create semester and year column
 data1 = data1 %>% 
   separate(sem, c("semester", "year"), 7)
 
@@ -43,7 +44,8 @@ data1$semester = ifelse(is.na(data1$blok)==TRUE, as.character(data1$semester), "
 data1$blok = NULL
 
 
-### correct kar
+#########################################################
+### correct grades and numeric variables
 
 as.numeric(data1$o_kar)
 as.numeric(data1$r_kar)
@@ -55,30 +57,16 @@ data1$kar = data1$kar %>%
   as.character() %>% 
   as.numeric()
 
-data1$year = data1$year %>% 
-  as.character() %>% 
-  as.numeric()
 
 
-
-##############################################################
-#### genemsnit and variables
+#########################################################
+#########################################################
+#### preparing data frame for plotting graph
 
 # select variables
 data.graf = data1 %>% 
   select(year, semester, name, kar, s_kar)
 data.graf$product = data.graf$s_kar * data.graf$kar
-
-# data.graf$year.order =
-#   ifelse(data.graf$year=="2011", 1,
-#          ifelse(data.graf$year=="2012", 2,
-#                 ifelse(data.graf$year=="2013", 3,
-#                        ifelse(data.graf$year=="2014", 4,
-#                               ifelse(data.graf$year=="2015", 5,6
-#   )))))
-# data.graf$year
-# 
-# summary(data.graf)
 
 data.graf1 = aggregate(data.graf$product, by=list(data.graf$year, data.graf$semester), FUN=sum, na.rm=TRUE)
 colnames(data.graf1)[3] = "sum.product" 
@@ -91,74 +79,28 @@ colnames(data.graf.plot)[1] = "year"
 colnames(data.graf.plot)[2] = "semester" 
 data.graf.plot$average = data.graf.plot$sum.product / data.graf.plot$count 
 
-# data.graf.plot$semester.order = 
-#   ifelse(data.graf.plot$semester=="Spring"
-#          , 1, 
-#          ifelse(data.graf.plot$semester=="Summer", 2, 3
-#          ))
-
 data.graf.plot = as.data.frame(data.graf.plot %>% 
                                  arrange(year, semester.order))
-data.graf.plot$semester.order = 
-  ifelse(data.graf.plot$semester=="Spring"
-         , 1, 
-         ifelse(data.graf.plot$semester=="Summer", 2, 3)
-  )
 
+### HUSK - fjern 2011, spring - ej retvisende: 1 fag
+### HUSK - fjern 2016, summer - endnu ej realiserede karaktere: 2 fag
 
-
-
-
-
+data.graf.plot1 = data.graf.plot[!(data.graf.plot$year=="2011" & data.graf.plot$semester=="Spring"),]
+data.graf.plot1 = data.graf.plot1[!(data.graf.plot1$year=="2016" & data.graf.plot1$semester=="Summer"),] 
 
 #########################################################
-#### Create plot  
+#########################################################
+### create graph
 
-g1 = ggplot(data=data.plot.graf, 
-            aes(year, semester))
-g1 = 
+graph = ggplot(data = data.graf.plot1, aes(year, average, fill=semester, color=semester)) + geom_line()   
+graph
 
+#########################################################
+#########################################################
+#### table over number of courses at a given year and semester  
 
+courses = aggregate(data.graf$s_kar, list(data.graf$year, data.graf$semester, data.graf$name), FUN=sum, na.rm = TRUE)
+  courses$count = 1
 
-
-
-
-#  
-# g1 = ggplot(data = data.graf.plot, aes(x = semester, y = average, group = 1), fill = semester, color = semester) +
-#   geom_line()
-# g1
-# 
-# ###############
-# g1 = g1 +  coord_cartesian(ylim = c(7, 12))
-# g1
-# 
-# ##############
-# g1 = g1 +
-#    annotate(geom = "text", x = seq_len(nrow(data.graf.plot)), y = 12, label = data.graf.plot$semester, size = 3) +
-#    annotate(geom = "text", x = 2.5 + 4 * (0:4), y = 12, label = unique(data.graf.plot$year), size = 3) +
-#    theme_bw() +
-#   theme(plot.margin = unit(c(1, 1, 4, 1), "lines"),
-#         axis.title.x = element_blank(),
-#         axis.text.x = element_blank(),
-#         panel.grid.major.x = element_blank(),
-#         panel.grid.minor.x = element_blank() )
-# g1
-# 
-# # remove clipping of x axis labels
-# g2 <- ggplot_gtable(ggplot_build(g1))
-# g2$layout$clip[g2$layout$name == "panel"] <- "off"
-# grid.draw(g2)
-
-
-
-
-# udviklingen af gennemsnittet for forskellige studieretninger
-# semestre/år på x aksen, og karakter på y aksen
-# forskellige studieretninger plottet ind
-
-
-
-# karakterfordeling på forskellige studieretninger. 
-# karaktere på x aksen og frekvens på y aksen. 
-# Forskellige studieretninger plottet ind
+Table = aggregate(courses$count, list(courses$Group.1, courses$Group.2), FUN=sum, na.rm = TRUE)
 
